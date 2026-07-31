@@ -1,0 +1,29 @@
+# Weaviate local (dev). Vector store do rag_orchestrator.
+#
+# API key vem do .env (NAO versionado -- ver .gitignore). Antes de subir:
+#   cp .env.example .env  &&  preencher WEAVIATE_API_KEY  (openssl rand -base64 32)
+# Espelhar o mesmo valor em rag_orchestrator/.env -> VECTOR_STORE_API_KEY.
+#
+# Subir: docker compose up -d
+version: '3.8'
+services:
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:latest
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      ENABLE_API_BASED_MODULES: 'true'
+      CLUSTER_HOSTNAME: 'node1'
+      AUTHENTICATION_APIKEY_ENABLED: 'true'
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: ${WEAVIATE_API_KEY:?defina WEAVIATE_API_KEY no .env}
+      AUTHENTICATION_APIKEY_USERS: ${WEAVIATE_API_USER:-rag_orchestrator}
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'false'
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+
+volumes:
+  weaviate_data:

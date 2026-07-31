@@ -1,0 +1,52 @@
+# Weaviate self-host NA MESMA EC2 do Trino (m7i-flex.large, 8 GiB).
+# Motivo: Weaviate Cloud free limita a 1 collection; o RAG precisa de 2
+# (database_schemas + validated_queries). Self-host = sem cap.
+#
+# vectorizer=none -> Weaviate NÃO roda modelo (vetores vêm do RAG). Footprint pequeno.
+# Trino usa heap 5G; mem_limit 1.5G aqui deixa folga p/ SO no host de 8G.
+#
+# Portas no HOST (Trino já publica só a 8443; 8080 do Trino é interno):
+#   8090 -> REST   (8080 interno do Weaviate; 8090 no host p/ não confundir)
+#   50051 -> gRPC  (cliente Weaviate v4 do RAG usa REST **e** gRPC)
+#
+# ANTES de subir:
+#   1) Security group da EC2: liberar 8090/tcp e 50051/tcp (inbound) p/ o IP/faixa do HF Space
+#   2) cp .env.example .env  &&  gerar a key: openssl rand -base64 32
+#      (o .env fica só na EC2 -- NAO versionado, ver .gitignore)
+#
+# Subir:   docker compose -f docker-compose.ec2.yaml up -d
+# Logs:    docker compose -f docker-compose.ec2.yaml logs -f
+# Parar:   docker compose -f docker-compose.ec2.yaml down   (dados ficam no volume)
+version: '3.8'
+
+services:
+  weaviate:
+    # Pino de versão (evita surpresa do :latest). Ajuste p/ a stable atual se quiser.
+    image: cr.weaviate.io/semitechnologies/weaviate:1.28.2
+    container_name: weaviate
+    restart: unless-stopped
+    ports:
+      - "8090:8080"     # REST público -> VECTOR_STORE_URL=http://<EC2>:8090
+      - "50051:50051"   # gRPC público (obrigatório p/ o cliente v4)
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      ENABLE_API_BASED_MODULES: 'true'
+      CLUSTER_HOSTNAME: 'node1'
+      # Deixa o Weaviate respeitar o limite de memória do container.
+      LIMIT_RESOURCES: 'true'
+      # Auth por API key, vinda do .env da EC2 (internet-facing -- key forte obrigatoria).
+      # Gerar: openssl rand -base64 32
+      # ESPELHAR no HF Space: VECTOR_STORE_API_KEY = mesmo valor.
+      AUTHENTICATION_APIKEY_ENABLED: 'true'
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: ${WEAVIATE_API_KEY:?defina WEAVIATE_API_KEY no .env}
+      AUTHENTICATION_APIKEY_USERS: ${WEAVIATE_API_USER:-rag_orchestrator}
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'false'
+    # Protege a RAM do host (Trino heap 5G + SO). Weaviate c/ vectorizer none cabe folgado.
+    mem_limit: 1500m
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+
+volumes:
+  weaviate_data:

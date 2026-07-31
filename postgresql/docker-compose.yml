@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: delfos-postgres
+    restart: unless-stopped
+    ports:
+      - "5442:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-delfos}
+      POSTGRES_USER: ${POSTGRES_USER:-delfos_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-delfos_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # Admin inicial -- lidos por init-scripts/03-create-admin-user.sql.
+      # Vazios = nenhum admin criado (o script pula). Preencher no .env.
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: >
+      postgres
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c listen_addresses=*
+      -c port=5432
+    networks:
+      - delfos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-delfos_user} -d ${POSTGRES_DB:-delfos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres-data:
+    driver: local
+    name: delfos-postgres-data
+
+networks:
+  delfos-network:
+    driver: bridge
+    name: delfos-network

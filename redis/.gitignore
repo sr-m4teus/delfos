@@ -1,0 +1,14 @@
+# Environment files
+.env
+
+# Redis data files
+*.rdb
+*.aof
+dump.rdb
+appendonly.aof
+
+# Logs
+*.log
+
+# Docker volumes data
+data/

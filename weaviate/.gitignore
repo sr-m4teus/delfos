@@ -1,0 +1,11 @@
+# Environment files (contem a API key do Weaviate)
+.env
+.env.local
+.env.*.local
+
+# Dados locais (se rodar sem volume nomeado)
+data/
+weaviate_data/
+
+# Logs
+*.log

@@ -1,0 +1,26 @@
+# Environment files
+.env
+
+# Database dumps
+*.sql.backup
+*.dump
+*.bak
+
+# Logs
+*.log
+log/
+
+# Data directory (if running locally)
+data/
+pgdata/
+
+# Migration files (if using migration tool)
+migrations/*.sql
+!migrations/.gitkeep
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
