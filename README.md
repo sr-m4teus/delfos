@@ -656,8 +656,3 @@ Trino é stateless — Oracle e AWS podem coexistir; o failover é só trocar o 
 - A API key do Weaviate vem de `weaviate/.env` (ignorado). Os composes usam `${WEAVIATE_API_KEY:?}` e abortam se ela faltar.
 
 - O admin inicial vem de `ADMIN_EMAIL` / `ADMIN_PASSWORD` no `postgresql/.env`. Sem eles, nenhum usuário é criado.
-
-Pendências conhecidas:
-
-- A key que estava hardcoded no `docker-compose.ec2.yaml` continua ativa no Weaviate da EC2 até ser rotacionada — gere uma nova no `.env` de lá e atualize o `VECTOR_STORE_API_KEY` do RAG.
-- Volumes de Postgres criados antes desta mudança ainda contêm `admin@delfos.local` / `admin123`. Troque a senha (comando acima) ou remova o usuário.
