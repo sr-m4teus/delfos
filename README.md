@@ -4,25 +4,55 @@ Plataforma de consulta em linguagem natural sobre bancos de dados federados. O u
 pergunta em português, um LLM traduz para SQL usando contexto recuperado por RAG, o SQL é validado
 e executado no **Trino**, que federa Supabase (PostgreSQL) e MongoDB Atlas.
 
-```
-┌──────────────┐      ┌───────────────────┐      ┌──────────────────────┐
-│  frontend    │─────▶│  delfos-backend   │─────▶│  rag_orchestrator    │
-│  Next.js 16  │ HTTP │  NestJS 11        │ HTTP │  FastAPI + Weaviate  │
-│  :3000       │      │  :3001            │      │  :8001 (7860 Docker) │
-└──────────────┘      └─────────┬─────────┘      └──────────────────────┘
-                                │                          ▲
-                       ┌────────┴────────┐                 │ embeddings
-                       │                 │                 │ (sentence-transformers)
-                       ▼                 ▼
-              ┌─────────────────┐  ┌──────────────┐
-              │  OpenRouter     │  │  Trino 450   │
-              │  (tradução NL→  │  │  :8443 HTTPS │
-              │   SQL)          │  └──────┬───────┘
-              └─────────────────┘         │
-                                ┌─────────┴──────────┐
-                                ▼                    ▼
-                       Supabase (Postgres)    MongoDB Atlas
-                       schema por banco       db_telemetria
+```mermaid
+flowchart TD
+    FE["frontend<br/>Next.js 16 · :3000"]
+    BE["delfos-backend<br/>NestJS 11 · :3001"]
+    RAG["rag_orchestrator<br/>FastAPI · :8001<br/>7860 no Docker"]
+    LLM["OpenRouter<br/>tradução NL → SQL"]
+    TRINO["Trino 450<br/>:8443 HTTPS + Basic auth"]
+
+    PG[("PostgreSQL 16<br/>:5442<br/>schema delfos")]
+    REDIS[("Redis 7<br/>:6379<br/>sessões")]
+    WV[("Weaviate<br/>:8080 REST · :50051 gRPC<br/>vetores")]
+
+    SB[("Supabase · PostgreSQL<br/>schema por banco")]
+    ATLAS[("MongoDB Atlas<br/>db_telemetria")]
+
+    FE -->|REST + JWT| BE
+
+    BE -->|contexto: tabelas + queries exemplo| RAG
+    BE -->|prompt com contexto| LLM
+    BE -->|SQL validado| TRINO
+    BE --> PG
+    BE --> REDIS
+
+    RAG -->|embeddings locais<br/>sentence-transformers| WV
+
+    TRINO -->|catalog supabase_targets| SB
+    TRINO -->|catalog mongodb_telemetria| ATLAS
+
+    subgraph app ["Aplicação"]
+        FE
+        BE
+        RAG
+    end
+
+    subgraph infra ["Infra local · Docker Compose"]
+        PG
+        REDIS
+        WV
+    end
+
+    subgraph vm ["VM · Oracle Free Tier ou AWS EC2"]
+        TRINO
+    end
+
+    subgraph ext ["Externos"]
+        LLM
+        SB
+        ATLAS
+    end
 ```
 
 ## Componentes
