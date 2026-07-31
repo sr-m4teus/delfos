@@ -1,0 +1,60 @@
+services:
+  - type: web
+    name: delfos-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /api/docs
+    envVars:
+      # --- Tailscale (acesso ao Trino atrás da VPN) ---
+      # Gere uma auth key EFÊMERA + REUSÁVEL no admin do Tailscale e cole aqui (secret).
+      - key: TS_AUTHKEY
+        sync: false
+      - key: TS_HOSTNAME
+        value: delfos-backend
+      # Proxy SOCKS5 do tailscaled userspace. NÃO mude.
+      - key: TRINO_SOCKS_PROXY
+        value: socks5h://localhost:1055
+      # IP da tailnet do servidor Trino (ex: http://100.x.y.z:8080). secret.
+      - key: TRINO_URL
+        sync: false
+      - key: TRINO_TIMEOUT
+        value: "30000"
+      - key: TRINO_USER
+        value: delfos_user
+      - key: TRINO_CATALOG
+        value: default
+
+      # --- App ---
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        sync: false
+
+      # --- Postgres / Redis / JWT / OpenRouter / RAG (secrets) ---
+      - key: POSTGRES_HOST
+        sync: false
+      - key: POSTGRES_PORT
+        sync: false
+      - key: POSTGRES_DB
+        sync: false
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: DB_SCHEMA
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_TLS
+        value: "true"
+      - key: JWT_SECRET
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: RAG_ORCHESTRATOR_URL
+        sync: false

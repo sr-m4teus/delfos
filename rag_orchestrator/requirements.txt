@@ -1,0 +1,25 @@
+# Python dependencies for RAG Orchestrator
+# Core Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Data Validation
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP Client
+httpx>=0.25.0
+
+# Vector Store (Weaviate)
+weaviate-client>=4.7.0
+
+# Embeddings (mesmo modelo para insert e search)
+sentence-transformers>=2.2.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.12.0

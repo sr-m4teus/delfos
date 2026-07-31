@@ -1,0 +1,16 @@
+.modal :global(.ant-modal-body) {
+  padding: 24px;
+}
+
+.sqlEditor {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

@@ -1,0 +1,28 @@
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.contentLayout {
+  transition: margin-left 0.2s;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content {
+  margin: 24px;
+  padding: 24px;
+  background: #fff !important;
+  color: #000 !important;
+  border-radius: 8px;
+  min-height: calc(100vh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}

@@ -1,0 +1,110 @@
+.container {
+  width: 100%;
+  min-height: 100%;
+  background: #fff;
+  color: #000;
+}
+
+.diagramWrap {
+  width: 100%;
+  height: calc(100vh - 120px);
+  min-height: 400px;
+  background: #fafafa;
+}
+
+.tableCard {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  min-width: 200px;
+  max-width: 280px;
+}
+
+.tableCardHeader {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tableCardDb {
+  font-size: 11px;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tableCardName {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+}
+
+.tableCardColumns {
+  list-style: none;
+  margin: 0;
+  padding: 8px 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.columnRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 12px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.columnRow:last-child {
+  border-bottom: none;
+}
+
+.columnName {
+  color: #262626;
+  font-family: ui-monospace, monospace;
+}
+
+.columnType {
+  color: #8c8c8c;
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+.handle {
+  width: 8px;
+  height: 8px;
+  background: #1890ff;
+  border: 2px solid #fff;
+}
+
+.loadingWrap,
+.errorWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 24px;
+  background: #fff;
+}
+
+.loadingText {
+  margin: 16px 0 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.errorWrap {
+  color: #ff4d4f;
+}
+
+.emptyWrap {
+  padding: 24px;
+  background: #fff;
+  text-align: center;
+  color: #8c8c8c;
+}

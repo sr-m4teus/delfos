@@ -1,0 +1,34 @@
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  position: relative;
+}
+
+.dynamicTable {
+  min-width: 100%;
+}
+
+.dynamicTable :global(.ant-table-thead > tr > th) {
+  background-color: #fafafa;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dynamicTable :global(.ant-table-tbody > tr > td) {
+  word-break: break-word;
+}
+
+.truncatedText {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nullValue {
+  color: #999;
+  font-style: italic;
+}

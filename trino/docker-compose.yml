@@ -1,0 +1,33 @@
+# Trino na VM Oracle Free Tier, EXPOSTO DIRETO via HTTPS (porta 8443) com auth por senha.
+# Backend (Render) alcanca em https://<IP-PUBLICO-VM>:8443 mandando Basic auth.
+# Catalogs: supabase_targets (Postgres/Supabase) + mongodb_telemetria (Atlas).
+# Credenciais via .env (NAO versionado). Cert + password.db gerados na VM (ver .gitignore).
+#
+# Antes de subir:
+#   1) abrir a porta 8443/tcp na Security List da VCN (OCI) + firewall do SO (iptables/firewalld)
+#   2) gerar cert PEM self-signed em config/cert/trino.pem
+#   3) gerar config/password.db (htpasswd -B)
+#   4) cp .env.example .env  &&  preencher
+# Subir:  docker compose up -d
+version: '3.8'
+
+services:
+  trino:
+    image: trinodb/trino:450
+    container_name: trino
+    restart: unless-stopped
+    ports:
+      - "8443:8443"          # HTTPS publico. NAO publicar a 8080 (HTTP interno).
+    volumes:
+      - ./config:/etc/trino  # inclui cert/trino.pem e password.db (montados juntos)
+    environment:
+      # Segredo de comunicacao interna (obrigatorio com auth) -- config.properties
+      - TRINO_SHARED_SECRET=${TRINO_SHARED_SECRET}
+      # Supabase (projeto delfos-targets) -- config/catalog/supabase_targets.properties
+      - SUPABASE_TARGETS_HOST=${SUPABASE_TARGETS_HOST}
+      - SUPABASE_TARGETS_PORT=${SUPABASE_TARGETS_PORT:-5432}
+      - SUPABASE_TARGETS_DB=${SUPABASE_TARGETS_DB:-postgres}
+      - SUPABASE_TARGETS_USER=${SUPABASE_TARGETS_USER}
+      - SUPABASE_TARGETS_PASSWORD=${SUPABASE_TARGETS_PASSWORD}
+      # MongoDB Atlas -- config/catalog/mongodb_telemetria.properties
+      - ATLAS_URI=${ATLAS_URI}

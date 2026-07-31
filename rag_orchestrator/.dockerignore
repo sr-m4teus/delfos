@@ -1,0 +1,15 @@
+venv/
+.venv/
+.git/
+.gitignore
+.pytest_cache/
+__pycache__/
+**/__pycache__/
+*.pyc
+tests/
+.cursor/
+.specify/
+.env
+env.example
+*.md
+specs/

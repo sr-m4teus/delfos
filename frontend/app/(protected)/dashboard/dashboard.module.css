@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  min-height: 100%;
+  background: #fff;
+  color: #000;
+}
+
+.loadingWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 240px;
+}
+
+.chartCard {
+  height: 100%;
+}
+
+.chartPlaceholder {
+  padding: 20px;
+  text-align: center;
+}
